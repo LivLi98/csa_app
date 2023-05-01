@@ -67,11 +67,14 @@ router.delete("/:id", async (req, res) => {
   try {
     const deleted = await item.destroy({
       where: { id: req.params.id },
-    })}
-  });
+    });
+    res.status(204).send(); // send a 204 (No Content) response to indicate success
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Something went wrong"); // send a 500 (Internal Server Error) response if an error occurs
+  }
+});
 
-    if (deleted) {
-      res.status(204).json({ message: "Item deleted" });
-    } else {
-      res.status(404).json({ message: "Item not found" });
-    }
+module.exports = router
+
+   

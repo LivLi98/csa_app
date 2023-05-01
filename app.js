@@ -14,16 +14,7 @@ const ordersRouter = require("./routes/orders");
 
 
 
-app.use( 
-    session({
-      secret: '8761234',
-      resave: false,
-      saveUninitialized: false,
-    })
-  );
-  app.use(passport.initialize());
-  app.use(passport.session());
-  
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -35,14 +26,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+  session({
+      secret: '8761234',
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
+  app.use(passport.initialize());
+  app.use(passport.session());
 
+  app.use('/auth', authRouter);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/auth', authRouter);
-
 app.use("/baskets", basketsRouter);
 app.use("/items", itemsRouter);
-app.use("/users", usersRouter);
 app.use("/orders", ordersRouter);
 
 module.exports = app;
