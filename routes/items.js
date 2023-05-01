@@ -2,23 +2,22 @@ const express = require("express");
 const router = express.Router();
 const { authenticate } = require("../middlewares/auth");
 
-const item  = require("../models");
+const item = require("../models");
 
 router.post("/", async (req, res) => {
   const { name, price } = req.body;
   try {
     const basket = await item.create({ name, price });
-    res.status(201).json(item);
+    res.status(201).json(basket);
   } catch (error) {
     res.status(500).json({ message: "Error creating item", error });
   }
 });
 
-
 router.get("/", async (req, res) => {
   try {
-    const item = await item.findAll();
-    res.json(item);
+    const items = await item.findAll();
+    res.json(items);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving Item", error });
   }
@@ -26,18 +25,17 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const item = await Item.findByPk(req.params.id); 
+    const itemInstance = await item.findByPk(req.params.id);
 
-    if (!item) {
+    if (!itemInstance) {
       res.status(404).json({ message: "Item not found" });
     } else {
-      res.json(item);
+      res.json(itemInstance);
     }
   } catch (error) {
     res.status(500).json({ message: "Error retrieving Item", error });
   }
 });
-
 
 router.put("/:id", async (req, res) => {
   const { name, price } = req.body;
@@ -48,14 +46,14 @@ router.put("/:id", async (req, res) => {
       newItem.name = name;
     }
     if (price !== undefined) {
-      newBasket.price = price;
+      newItem.price = price;
     }
     const [updated] = await item.update(newItem, {
       where: { id: req.params.id },
     });
 
     if (updated) {
-      const updatedItem = await Item.findByPk(req.params.id);
+      const updatedItem = await item.findByPk(req.params.id);
       res.json(updatedItem);
     } else {
       res.status(404).json({ message: "Item not found" });
@@ -65,24 +63,15 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-
 router.delete("/:id", async (req, res) => {
   try {
-    const deleted = await Item.destroy({
+    const deleted = await item.destroy({
       where: { id: req.params.id },
-    });
+    })}
+  });
 
     if (deleted) {
       res.status(204).json({ message: "Item deleted" });
     } else {
       res.status(404).json({ message: "Item not found" });
     }
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting item", error });
-  }
-});
-
-router.post("/", authenticate, async (req, res) => {
-})
-
-module.exports = router
