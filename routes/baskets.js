@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
 });
 
 
-router.get("/", async (req, res) => {
+router.get("/", authenticate, async (req, res) => {
   try {
     const baskets = await Basket.findAll(); // how can we include the ITEMS associated with the baskets in this response?
     res.json(baskets);
